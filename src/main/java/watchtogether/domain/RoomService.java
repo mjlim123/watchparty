@@ -1,0 +1,42 @@
+package watchtogether.domain;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import watchtogether.data.RoomRepository;
+import watchtogether.models.Room;
+
+import java.security.SecureRandom;
+import java.util.List;
+
+@Service
+public class RoomService {
+
+    private final RoomRepository roomRepository;
+
+    @Autowired
+    public RoomService(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
+    }
+
+    public List<Room> getAllRooms() {
+        return roomRepository.findAll();
+    }
+
+    public Room getRoomByCode(String roomCode) {
+        return roomRepository.getRoomByCode(roomCode);
+    }
+
+    public String generateRoomCode() {
+        final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        final SecureRandom RANDOM = new SecureRandom();
+        final int LENGTH = 7;
+
+        StringBuilder sb = new StringBuilder(LENGTH);
+        for (int i = 0; i < LENGTH; i++) {
+            int randomIndex = RANDOM.nextInt(ALPHANUMERIC.length());
+            sb.append(ALPHANUMERIC.charAt(randomIndex));
+        }
+        return sb.toString();
+
+    }
+}
