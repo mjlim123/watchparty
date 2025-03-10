@@ -1,6 +1,9 @@
 package watchtogether.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +18,15 @@ public class Room {
     @Column(nullable = false)
     private String room_name;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String room_code;
 
     @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private Playlist playlist;
+
+    public Room() {
+    }
 
 
     public Long getRoom_id() {

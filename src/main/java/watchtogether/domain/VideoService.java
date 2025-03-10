@@ -24,4 +24,8 @@ public class VideoService {
         return videoRepository.findAll();
     }
 
+    public Video createVideo(Video video) {
+        return videoRepository.save(video);
+    }
+
 }

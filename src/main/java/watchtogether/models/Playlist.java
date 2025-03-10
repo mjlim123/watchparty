@@ -15,6 +15,10 @@ public class Playlist {
     @JoinColumn(name = "room_id", unique = true, nullable = false)
     private Room room;
 
+    public Playlist() {
+
+    }
+
     public Long getPlaylist_id() {
         return playlist_id;
     }

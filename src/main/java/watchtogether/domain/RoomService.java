@@ -2,7 +2,9 @@ package watchtogether.domain;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import watchtogether.data.PlaylistRepository;
 import watchtogether.data.RoomRepository;
+import watchtogether.models.Playlist;
 import watchtogether.models.Room;
 
 import java.security.SecureRandom;
@@ -12,10 +14,12 @@ import java.util.List;
 public class RoomService {
 
     private final RoomRepository roomRepository;
+    private final PlaylistRepository playlistRepository;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository) {
+    public RoomService(RoomRepository roomRepository, PlaylistRepository playlistRepository) {
         this.roomRepository = roomRepository;
+        this.playlistRepository = playlistRepository;
     }
 
     public List<Room> getAllRooms() {
@@ -24,6 +28,9 @@ public class RoomService {
 
     public Room createRoom(Room room) {
         room.setRoom_code(generateRoomCode());
+        Playlist playlist = new Playlist();
+        playlist.setRoom(room);
+        room.setPlaylist(playlist);
         return roomRepository.save(room);
     }
 

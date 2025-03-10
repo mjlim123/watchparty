@@ -10,12 +10,13 @@ create table `user`(
 create table room (
 	room_id int primary key auto_increment,
     room_name varchar(255) not null,
-    room_code varchar(7)
+    room_code varchar(10)
 );
 
 create table playlist (
 	playlist_id int primary key auto_increment,
     room_id int unique,
+    playlist_name varchar(255),
     foreign key (room_id) references room(room_id) on delete cascade
     
 );
