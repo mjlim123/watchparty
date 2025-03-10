@@ -22,6 +22,11 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
+    public Room createRoom(Room room) {
+        room.setRoom_code(generateRoomCode());
+        return roomRepository.save(room);
+    }
+
     public Room getRoomByCode(String roomCode) {
         return roomRepository.getRoomByCode(roomCode);
     }
@@ -29,7 +34,7 @@ public class RoomService {
     public String generateRoomCode() {
         final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         final SecureRandom RANDOM = new SecureRandom();
-        final int LENGTH = 7;
+        final int LENGTH = 10;
 
         StringBuilder sb = new StringBuilder(LENGTH);
         for (int i = 0; i < LENGTH; i++) {

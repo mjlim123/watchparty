@@ -12,6 +12,7 @@ import watchtogether.models.Room;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -25,6 +26,17 @@ public class RoomController {
     public RoomController(RoomService roomService) {
         this.roomService = roomService;
     }
+
+    @PostMapping()
+    public ResponseEntity<?> createRoom(@RequestBody Room room) {
+        Room savedRoom = roomService.createRoom(room);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedRoom);
+
+    }
+
+
+
+
 
 
 }

@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import watchtogether.domain.UserService;
-import watchtogether.dto.UserDTO;
 import watchtogether.models.User;
 
 import java.util.List;
