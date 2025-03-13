@@ -2,6 +2,7 @@ package watchtogether.controllers;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -16,8 +17,9 @@ public class WebsocketController {
     }
 
 
-    @MessageMapping("/room/{roomCode}") // Maps to "/app/sendMessage" (prefix from configuration)
-    public String sendMessage(@DestinationVariable String roomCode, String message) {
-        return message;
+    @MessageMapping("/room/{roomCode}") // Maps to "/app/room/{roomCode}"
+    @SendTo("/topic/room/{roomCode}") // Broadcasts message to subscribers
+    public String sendMessage(@DestinationVariable String roomCode, @Payload String message) {
+        return message; // Broadcasts the message to all clients
     }
 }

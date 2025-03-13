@@ -31,7 +31,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void deleteUser(int id) {
+    public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 

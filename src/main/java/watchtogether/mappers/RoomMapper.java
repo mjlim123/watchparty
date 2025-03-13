@@ -11,6 +11,7 @@ public class RoomMapper {
         RoomDTO dto = new RoomDTO();
         dto.setRoom_id(room.getRoom_id());
         dto.setRoom_name(room.getRoom_name());
+        dto.setRoom_code(room.getRoom_code());
         return dto;
     }
 

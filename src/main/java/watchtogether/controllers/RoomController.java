@@ -40,7 +40,7 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
-    @PostMapping()
+    @PostMapping("/create")
     public ResponseEntity<RoomDTO> createRoom(@RequestBody RoomDTO roomDTO) {
         Room room = roomMapper.toEntity(roomDTO);
         Room savedRoom = roomService.createRoom(room);

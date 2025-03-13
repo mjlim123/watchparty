@@ -1,10 +1,20 @@
 package watchtogether.dtos;
 
+import java.util.List;
+
 public class PlaylistDTO {
 
     private Long playlist_id;
     private Long room_id;
+    public List<VideoDTO> videos;
 
+    public List<VideoDTO> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<VideoDTO> videos) {
+        this.videos = videos;
+    }
 
     public Long getPlaylist_id() {
         return playlist_id;

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Room {
@@ -59,5 +60,27 @@ public class Room {
 
     public void setPlaylist(Playlist playlist) {
         this.playlist = playlist;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Room room = (Room) o;
+        return Objects.equals(room_id, room.room_id) && Objects.equals(room_name, room.room_name) && Objects.equals(room_code, room.room_code) && Objects.equals(playlist, room.playlist);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(room_id, room_name, room_code, playlist);
+    }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "room_id=" + room_id +
+                ", room_name='" + room_name + '\'' +
+                ", room_code='" + room_code + '\'' +
+                ", playlist=" + playlist +
+                '}';
     }
 }

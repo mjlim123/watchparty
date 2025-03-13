@@ -4,6 +4,7 @@ package watchtogether.models;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "User")
@@ -32,4 +33,23 @@ public class User {
         this.username = username;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(user_id, user.user_id) && Objects.equals(username, user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user_id, username);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "user_id=" + user_id +
+                ", username='" + username + '\'' +
+                '}';
+    }
 }

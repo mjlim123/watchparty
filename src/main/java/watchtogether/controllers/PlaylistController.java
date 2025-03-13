@@ -1,6 +1,7 @@
 package watchtogether.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,5 +37,17 @@ public class PlaylistController {
                 .toList();
         return ResponseEntity.ok(playlists);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PlaylistDTO> getPlaylistById(Long id) {
+        Playlist playlist = playlistService.getPlaylistById(id);
+        PlaylistDTO dto = playlistMapper.toDTO(playlist);
+        return ResponseEntity.ok(dto);
+    }
+
+//      @GetMapping()
+//    public ResponseEntity<List<Playlist>> getAllPlaylists() {
+//        return ResponseEntity.ok(playlistService.getAllPlaylists());
+//      }
 
 }

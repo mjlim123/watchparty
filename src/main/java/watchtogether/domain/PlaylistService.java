@@ -22,6 +22,11 @@ public class PlaylistService {
         return playlistRepository.findAll();
     }
 
+    public Playlist getPlaylistById(Long id) {
+        return playlistRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+    }
+
     public Playlist createPlaylist(Playlist playlist) {
         return playlistRepository.save(playlist);
     }
