@@ -1,41 +1,27 @@
 import { useNavigate } from "react-router";
 import { post } from "../apiService";
-import ModalForm from "../components/ModalForm";
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 
 export default function Home() {
 
     let navigate = useNavigate();
     
-    const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState(null);
 
     const [roomName, setRoomName] = useState('');
     const [joinCode, setJoinCode] = useState('');
 
-    const modalRef = useRef(null);
-
-    const handleClose = () => {
-        if (modalRef.current) {
-          modalRef.current.close(); // Close the modal
-        }
-      };
-
-
-
     const handleShowJoin = () => {
         setModalType("join");
-        if (modalRef.current) {
-          modalRef.current.showModal(); // Open the modal
-        }
+        document.getElementById('my_modal').showModal()
+        
       };
 
       const handleShowCreate = () => {
         setModalType("create");
-        if (modalRef.current) {
-          modalRef.current.showModal(); // Open the modal
-        }
+        document.getElementById('my_modal').showModal()
+        
       };
 
 
@@ -52,7 +38,7 @@ export default function Home() {
                 console.error(error);
             })
             .finally(() => {
-                handleClose();
+                document.getElementById('my_modal').close()
             });
     }
 
@@ -63,7 +49,7 @@ export default function Home() {
 
     return (
         <div>
-            <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
                 <div className="text-center text-white">
                     <p className="text-6xl font-bold mb-4 animate-bounce">
                         Welcome to Watchparty
@@ -81,19 +67,23 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            {/* Open the modal using document.getElementById('ID').showModal() method */}
-            <button className="btn" onClick={()=>document.getElementById('my_modal_1').showModal()}>open modal</button>
-            <dialog id="my_modal_1" className="modal">
-            <div className="modal-box">
-                <h3 className="font-bold text-lg">Hello!</h3>
-                <p className="py-4">Press ESC key or click the button below to close</p>
-                <div className="modal-action">
-                <form method="dialog">
-                    {/* if there is a button in form, it will close the modal */}
-                    <button className="btn">Close</button>
-                </form>
+            <dialog id="my_modal" className="modal">
+                <div className="modal-box w-full max-w-md">
+                    <h3 className="font-bold text-lg">{modalType === "join" ? "Join room" : "Create room"}</h3>
+                    <fieldset className="fieldset mt-1">
+                        <legend className="text-base fieldset-legend">{modalType === "join" ? "Enter room code" : "Enter room name"}</legend>
+                        <input onChange={modalType === "join" ? handleJoinRoomChange : handleCreateRoomChange} type="text" className="input h-[40px]" placeholder="Room name" />
+
+                    </fieldset>
+                    <div className="modal-action">
+                        <form method="dialog">
+                            <button className="btn">Close</button>
+                        </form>
+                        <form method="dialog" onSubmit={modalType === "join" ? handleJoinRoomSubmit : handleCreateRoomSubmit}>
+                            <button type="submit" className="btn">Submit</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
             </dialog>
         </div>
     )

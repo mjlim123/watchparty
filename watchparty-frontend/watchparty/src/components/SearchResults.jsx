@@ -1,0 +1,52 @@
+import React from 'react';
+import { useContext } from 'react';
+import { RoomContext } from '../contexts/RoomContext';
+import he from 'he';
+
+export default function SearchResults() {
+
+
+    const { searchResults, currentVideo, setCurrentVideo, setPlaylist, playlist } = useContext(RoomContext);
+
+    const handleVideoSelect = (videoId) => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        setCurrentVideo(videoId);
+    }
+
+    const handleAddToPlaylist = (video, e) => {
+        e.stopPropagation();
+        const uniqueEntry = {
+            ...video, 
+            uniqueId: `${video.id.videoId}-${Date.now()}` 
+        }
+        setPlaylist((prev) => [...prev, uniqueEntry]);
+        console.log(playlist);
+    }
+        
+    return (
+        <div className={searchResults.length > 0 ? 'mx-auto' : ''}> 
+            {searchResults.length > 0 ? (
+                <div className='w-[40vw] bg-[#1E293B] rounded-lg'>
+                    {searchResults.map((result) => (
+                        <div onClick={() => handleVideoSelect(result.id.videoId)} key={result.id.videoId} 
+                        className="transition duration-300 hover:bg-[#1E293B] 
+                        hover:shadow-[0_0_15px_#2563EB] flex items-center gap-6 p-6 border-b border-[#374151] 
+                        last:border-b-0 cursor-pointer">
+                            <img src={result.snippet.thumbnails.high.url} alt="" className="w-30 h-30" />
+                            <div>
+                                <h2 className='text-[#E5E7EB]'>{he.decode(result.snippet.title)}</h2>
+                                <p className='text-[#E5E7EB]'>{result.snippet.channelTitle}</p>
+                                <button onClick={(e) => handleAddToPlaylist(result, e)} className='btn'>Add to playlist</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center p-6">
+                    <p>Try searching for videos in the search bar up top!</p>
+                </div>
+            )}
+
+        </div>
+    )
+}
