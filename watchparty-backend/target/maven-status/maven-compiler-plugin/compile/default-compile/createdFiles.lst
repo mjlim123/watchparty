@@ -1,0 +1,17 @@
+watchtogether\data\VideoRepository.class
+watchtogether\models\Room.class
+watchtogether\controllers\PlaylistController.class
+watchtogether\data\RoomRepository.class
+watchtogether\domain\RoomService.class
+watchtogether\data\UserRepository.class
+watchtogether\models\Playlist.class
+watchtogether\domain\PlaylistService.class
+watchtogether\App.class
+watchtogether\controllers\VideoController.class
+watchtogether\domain\VideoService.class
+watchtogether\models\Video.class
+watchtogether\controllers\UserController.class
+watchtogether\domain\UserService.class
+watchtogether\controllers\RoomController.class
+watchtogether\data\PlaylistRepository.class
+watchtogether\models\User.class
