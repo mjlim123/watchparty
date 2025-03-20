@@ -26,6 +26,7 @@ create table video (
     playlist_id int not null,
     title varchar(255) not null,
     video_url varchar(255) not null,
+    thumbnail_url varchar(255) not null,
     foreign key (playlist_id) references playlist(playlist_id)
 );
 

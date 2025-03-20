@@ -8,6 +8,8 @@ import watchtogether.domain.VideoService;
 import watchtogether.dtos.VideoDTO;
 import watchtogether.models.Video;
 
+import javax.persistence.EntityNotFoundException;
+
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/video")
@@ -33,8 +35,13 @@ public class VideoController {
 
     @DeleteMapping("/delete/{videoId}/{playlistId}")
     public ResponseEntity<Void> deleteVideoFromPlaylist(@PathVariable Long videoId, @PathVariable Long playlistId) {
-        videoService.deleteVideoByPlaylistId(videoId, playlistId);
-        return ResponseEntity.noContent().build();
-
+        try {
+            videoService.deleteVideoByPlaylistId(videoId, playlistId);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

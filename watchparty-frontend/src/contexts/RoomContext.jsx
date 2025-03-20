@@ -8,7 +8,7 @@ export const RoomProvider = ({ children }) => {
     const [currentVideo, setCurrentVideo] = useState(null);
     const [playlist, setPlaylist] = useState([]);
     const [room, setRoom] = useState(null);
-
+    const [connection, setConnection] = useState(null);
 
     return (
         <RoomContext.Provider
@@ -22,7 +22,9 @@ export const RoomProvider = ({ children }) => {
                 playlist,
                 setPlaylist,
                 room,
-                setRoom
+                setRoom,
+                connection,
+                setConnection
             }}
         >
             {children}

@@ -6,7 +6,7 @@ import { get, remove } from "../apiService";
 
 export default function Playlist() {
 
-    const { playlist, setCurrentVideo, setPlaylist } = useContext(RoomContext);
+    const { playlist, setCurrentVideo, setPlaylist, room, connection } = useContext(RoomContext);
 
 
     const handleVideoSelect = (videoId) => {
@@ -15,7 +15,10 @@ export default function Playlist() {
     }
 
     const removeFromPlaylist = (videoToRemove) => {
-        setPlaylist((prev) => prev.filter((video) => video.video_id !== videoToRemove.video_id));
+        connection.send(`/app/room/${room.room_code}/delete`, {} ,JSON.stringify({ videoId: videoToRemove.video_id, playlistId: room.playlistId })
+        );
+        // setPlaylist((prev) => prev.filter((video) => video.video_id !== videoToRemove.video_id));
+        // remove('video', `${videoToRemove.video_id}/${room.playlistId}`)
     };
 
 

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import RoomNavbar from "../components/RoomNavbar";
-import { get } from "../apiService";
+import { get, remove } from "../apiService";
 import SearchResults from "../components/SearchResults";
 import YouTube from "react-youtube";
 import { RoomContext } from "../contexts/RoomContext";
@@ -13,17 +13,12 @@ import Playlist from "../components/Playlist";
 export default function Room() {
 
     const { code } = useParams();
-    const { currentVideo, room, setRoom } = useContext(RoomContext);
+    const { currentVideo, room, setRoom, playlist, setPlaylist, connection, setConnection } = useContext(RoomContext);
 
     const [input, setInput] = useState('');
 
 
     const [user, setUser] = useState('');
-    const [connection, setConnection] = useState('');
-    const [messages, setMessages] = useState([]);
-    const [message, setMessage] = useState([]);
-
-    const [showModal, setShowModal] = useState(true);
 
     const opts = {
         height: window.innerHeight * 0.8,
@@ -41,10 +36,21 @@ export default function Room() {
         document.getElementById('my_modal').close();
     }
 
+    const handleDelete = (videoId, playlistId) => {
+        remove('video', `${videoId}/${playlistId}`);
+        setPlaylist((prev) => prev.filter((video) => video.video_id !== videoId));
+    }
+
     useEffect(() => {
         document.getElementById('my_modal').showModal()
     }, [])
 
+    useEffect(() => {
+        if (room) {
+            get('playlist', `${room.playlistId}`).then((data) => setPlaylist(data.videos));
+        }
+        
+    },[room])
 
     useEffect(() => {
         if (user) {
@@ -54,9 +60,11 @@ export default function Room() {
             connection.debug = () => { };
 
             connection.connect({}, () => {
-                connection.subscribe(`/topic/room/${code}`, (response) => {
-                    const message = JSON.parse(response.body);
-                    setMessages((prev) => [...prev, message]);
+                connection.subscribe(`/topic/room/${code}/delete`, (response) => {
+                    console.log("DELETE VIDEO!");
+                    const videoId = JSON.parse(response.body).videoId;
+                    const playlistId = JSON.parse(response.body).playlistId;
+                    handleDelete(videoId, playlistId);
                 });
             });
 
@@ -64,6 +72,7 @@ export default function Room() {
         }
 
     }, [user])
+
 
     return (
         <div className="bg-[#121212] min-h-screen flex flex-col">
@@ -96,7 +105,6 @@ export default function Room() {
                     }
                 </div>
 
-
                 <div className="col-start-4 justify-self-end w-[18vw] max-h-[80vh] rounded-lg overflow-y-auto">
                     <Playlist />
                 </div>
@@ -105,6 +113,7 @@ export default function Room() {
                 <div className="col-span-3 flex flex-col rounded-lg p-4">
                     <SearchResults />
                 </div>
+                <button onClick={()=> console.log(room)}> CLICK HERE</button>
             </div>
         </div>
     )
