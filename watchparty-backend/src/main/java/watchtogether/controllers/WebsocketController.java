@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import watchtogether.dtos.VideoAddRequest;
 import watchtogether.dtos.VideoDeleteRequest;
 
 @Controller
@@ -27,8 +28,19 @@ public class WebsocketController {
     @MessageMapping("/room/{roomCode}/delete")
     @SendTo("/topic/room/{roomCode}/delete")
     public VideoDeleteRequest  deleteVideo(@DestinationVariable String roomCode, @Payload VideoDeleteRequest video) {
-        System.out.println("HIT!");
         return video;
     }
 
+    @MessageMapping("/room/{roomCode}/add")
+    @SendTo("/topic/room/{roomCode}/add")
+    public VideoAddRequest addVideo(@DestinationVariable String roomCode, @Payload VideoAddRequest video) {
+        return video;
+    }
+
+    @MessageMapping("/room/{roomCode}/play")
+    @SendTo("/topic/room/{roomCode}/play")
+    public String playVideo(String video) {
+        System.out.println("HIT!");
+        return video;
+    }
 }

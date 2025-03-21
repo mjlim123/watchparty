@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import RoomNavbar from "../components/RoomNavbar";
-import { get, remove } from "../apiService";
+import { get, post, remove } from "../apiService";
 import SearchResults from "../components/SearchResults";
 import YouTube from "react-youtube";
 import { RoomContext } from "../contexts/RoomContext";
@@ -13,7 +13,7 @@ import Playlist from "../components/Playlist";
 export default function Room() {
 
     const { code } = useParams();
-    const { currentVideo, room, setRoom, playlist, setPlaylist, connection, setConnection } = useContext(RoomContext);
+    const { setCurrentVideo, currentVideo, room, setRoom, playlist, setPlaylist, connection, setConnection } = useContext(RoomContext);
 
     const [input, setInput] = useState('');
 
@@ -36,9 +36,19 @@ export default function Room() {
         document.getElementById('my_modal').close();
     }
 
-    const handleDelete = (videoId, playlistId) => {
+    function handleAddToPlaylist(video){
+        get('playlist', `${video.playlistId}`).then((data) => setPlaylist(data.videos));
+    }
+
+    function handleDelete(videoId, playlistId){
         remove('video', `${videoId}/${playlistId}`);
         setPlaylist((prev) => prev.filter((video) => video.video_id !== videoId));
+    }
+
+    function handlePlayVideo(videoURL){
+        console.log("PLAYING VIDEO: ", videoURL);
+        console.log(room);
+        setCurrentVideo(videoURL.videoUrl);
     }
 
     useEffect(() => {
@@ -48,6 +58,27 @@ export default function Room() {
     useEffect(() => {
         if (room) {
             get('playlist', `${room.playlistId}`).then((data) => setPlaylist(data.videos));
+            connection.connect({}, () => {
+                connection.subscribe(`/topic/room/${code}/delete`, (response) => {
+                    console.log("DELETE VIDEO!");
+                    const videoId = JSON.parse(response.body).videoId;
+                    const playlistId = JSON.parse(response.body).playlistId;
+                    handleDelete(videoId, playlistId);
+                });
+
+                connection.subscribe(`/topic/room/${code}/add`, (response) => {
+                    console.log("ADD VIDEO!");
+                    const video = JSON.parse(response.body);
+                    handleAddToPlaylist(video);
+                });
+
+                connection.subscribe(`/topic/room/${code}/play`, (response) => {
+                    console.log("PLAY VIDEO!");
+                    const videoURL = JSON.parse(response.body);
+                    handlePlayVideo(videoURL);
+                });
+            
+            });
         }
         
     },[room])
@@ -58,16 +89,6 @@ export default function Room() {
             const socket = new SockJS("http://localhost:8080/ws");
             const connection = over(socket);
             connection.debug = () => { };
-
-            connection.connect({}, () => {
-                connection.subscribe(`/topic/room/${code}/delete`, (response) => {
-                    console.log("DELETE VIDEO!");
-                    const videoId = JSON.parse(response.body).videoId;
-                    const playlistId = JSON.parse(response.body).playlistId;
-                    handleDelete(videoId, playlistId);
-                });
-            });
-
             setConnection(connection);
         }
 

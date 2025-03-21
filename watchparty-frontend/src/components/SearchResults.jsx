@@ -7,7 +7,7 @@ import { post } from '../apiService';
 export default function SearchResults() {
 
 
-    const { searchResults, currentVideo, setCurrentVideo, setPlaylist, playlist, room } = useContext(RoomContext);
+    const { searchResults, currentVideo, setCurrentVideo, setPlaylist, playlist, room, connection } = useContext(RoomContext);
 
     const handleVideoSelect = (videoId) => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -20,11 +20,13 @@ export default function SearchResults() {
         const videoObject = {
             "title" : video.snippet.title,
             "video_url" : video.id.videoId,
-            "thumbnail_url" : video.snippet.thumbnails.high.url
+            "thumbnail_url" : video.snippet.thumbnails.high.url,
+            "playlistId" : room.playlistId
         }
         const response = await post('video', videoObject, `/${room.playlistId}`);
-        console.log(response);
-        setPlaylist((prev) => [...prev, response]);
+        connection.send(`/app/room/${room.room_code}/add`, {} , JSON.stringify(videoObject));
+        // console.log(response);
+        // setPlaylist((prev) => [...prev, response]);
     }
         
     return (

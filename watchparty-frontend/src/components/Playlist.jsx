@@ -9,9 +9,13 @@ export default function Playlist() {
     const { playlist, setCurrentVideo, setPlaylist, room, connection } = useContext(RoomContext);
 
 
-    const handleVideoSelect = (videoId) => {
+    const handleVideoSelect = (video) => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-        setCurrentVideo(videoId);
+        connection.send(
+    `/app/room/${room.room_code}/play`,
+    {},
+    JSON.stringify({ videoUrl: video.video_url }) // Send as JSON object
+);
     }
 
     const removeFromPlaylist = (videoToRemove) => {
@@ -29,7 +33,7 @@ export default function Playlist() {
                 <div className='h-[80vh] bg-[#161B22]'>
                     {playlist.map((result) => (
                         <div
-                            onClick={() => handleVideoSelect(result.id.videoId)}
+                            onClick={() => handleVideoSelect(result)}
                             key={result.video_id}
                             className="transition duration-300 hover:bg-[#1E293B] hover:shadow-[0_0_15px_#2563EB] 
                                            bg-[#161B22] flex items-center gap-6 p-2 border-b border-[#374151] 
