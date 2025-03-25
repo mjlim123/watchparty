@@ -1,0 +1,14 @@
+# Node.js (Frontend)
+node_modules/
+dist/
+build/
+
+# Java (Spring Boot Backend)
+target/
+*.log
+*.iml
+.idea/
+*.jar
+*.war
+*.class
+.env.*
