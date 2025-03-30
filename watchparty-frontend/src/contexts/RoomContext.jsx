@@ -6,11 +6,13 @@ export const RoomProvider = ({ children }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [currentVideo, setCurrentVideo] = useState(null);
-    const [playlist, setPlaylist] = useState([]);
+    const [playlist, setPlaylist] = useState(null);
     const [room, setRoom] = useState(null);
     const [connection, setConnection] = useState(null);
     const [currentTime, setCurrentTime] = useState(0);
+    const [playlistPosition, setPlaylistPosition] = useState(0);
     const targetRef = useRef(null);
+    const [isUsingPlaylist, setIsUsingPlaylist] = useState(false);
 
     return (
         <RoomContext.Provider
@@ -29,6 +31,10 @@ export const RoomProvider = ({ children }) => {
                 setConnection,
                 currentTime,
                 setCurrentTime,
+                playlistPosition,
+                setPlaylistPosition,
+                isUsingPlaylist,
+                setIsUsingPlaylist,
             }}
         >
             {children}

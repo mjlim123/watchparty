@@ -16,7 +16,7 @@ public class Video {
     private long video_id;
 
     @ManyToOne
-    @JoinColumn(name = "playlist_id", nullable = false)
+    @JoinColumn(name = "playlist_id")
     private Playlist playlist;
 
     private String title;

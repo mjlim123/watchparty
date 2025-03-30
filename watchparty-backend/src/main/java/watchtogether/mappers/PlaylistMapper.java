@@ -31,6 +31,7 @@ public class PlaylistMapper {
         dto.setPlaylist_id(playlist.getPlaylist_id());
         dto.setVideos(videos);
         dto.setRoom_id(playlist.getRoom().getRoom_id());
+        dto.setPosition(playlist.getPosition());
         return dto;
     }
 }

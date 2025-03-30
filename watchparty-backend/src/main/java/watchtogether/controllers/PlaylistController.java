@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import watchtogether.domain.PlaylistService;
 import watchtogether.dtos.PlaylistDTO;
+import watchtogether.dtos.RoomDTO;
 import watchtogether.dtos.VideoDTO;
 import watchtogether.mappers.PlaylistMapper;
 import watchtogether.models.Playlist;
+import watchtogether.models.Room;
 import watchtogether.models.Video;
 
 import java.util.List;
@@ -48,6 +50,13 @@ public class PlaylistController {
     public ResponseEntity<PlaylistDTO> getPlaylistByRoomId(@PathVariable Long roomId) {
         Playlist playlist = playlistService.getPlaylistByRoomId(roomId);
         PlaylistDTO dto = playlistMapper.toDTO(playlist);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/update/{id}/position")
+    public ResponseEntity<PlaylistDTO> updateCurrentTime(@PathVariable Long id, @RequestParam Integer number) {
+        Playlist playlistToUpdate = playlistService.updatePlaylistPosition(id , number);
+        PlaylistDTO dto = playlistMapper.toDTO(playlistToUpdate);
         return ResponseEntity.ok(dto);
     }
 

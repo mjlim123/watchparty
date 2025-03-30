@@ -27,8 +27,23 @@ public class Room {
     @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private Playlist playlist;
 
+    @OneToOne
+    @JoinColumn(name = "current_video_id") // Ensures it references the Video entity
+    private Video current_video;
+
+    private Double current_video_time;
+
+    private Boolean using_playlist;
 
     public Room() {
+    }
+
+    public Boolean getUsing_playlist() {
+        return using_playlist;
+    }
+
+    public void setUsing_playlist(Boolean using_playlist) {
+        this.using_playlist = using_playlist;
     }
 
     public Long getRoom_id() {
@@ -63,29 +78,31 @@ public class Room {
         this.playlist = playlist;
     }
 
+    public Video getCurrent_video() {
+        return current_video;
+    }
 
+    public void setCurrent_video(Video current_video) {
+        this.current_video = current_video;
+    }
 
+    public Double getCurrent_video_time() {
+        return current_video_time;
+    }
 
+    public void setCurrent_video_time(Double current_video_time) {
+        this.current_video_time = current_video_time;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Room room = (Room) o;
-        return Objects.equals(room_id, room.room_id) && Objects.equals(room_name, room.room_name) && Objects.equals(room_code, room.room_code) && Objects.equals(playlist, room.playlist);
+        return Objects.equals(room_id, room.room_id) && Objects.equals(room_name, room.room_name) && Objects.equals(room_code, room.room_code) && Objects.equals(playlist, room.playlist) && Objects.equals(current_video, room.current_video);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(room_id, room_name, room_code, playlist);
-    }
-
-    @Override
-    public String toString() {
-        return "Room{" +
-                "room_id=" + room_id +
-                ", room_name='" + room_name + '\'' +
-                ", room_code='" + room_code + '\'' +
-                ", playlist=" + playlist +
-                '}';
+        return Objects.hash(room_id, room_name, room_code, playlist, current_video);
     }
 }

@@ -73,3 +73,28 @@ export async function remove(endpoint, param = "") {
 
 }
 
+export async function put(endpoint, param = "") {
+    const url = param ? `${URL}/api/${endpoint}/update${param}` : `${URL}/api/${endpoint}`;
+    console.log(url);
+    try {
+        const response = await fetch(url, {
+            method: "PUT", // Specify DELETE method
+            headers: {
+                "Content-Type": "application/json",
+                
+                // Add Authorization headers if needed, e.g., "Authorization": `Bearer ${token}`
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+
+        return response.json(); // If the response body is empty, this may fail
+    } catch (error) {
+        console.error("Error in remove function:", error);
+        throw error; // Re-throw for handling at the caller level
+    }
+
+}
+

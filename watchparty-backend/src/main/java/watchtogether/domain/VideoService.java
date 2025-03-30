@@ -44,4 +44,9 @@ public class VideoService {
         return videoRepository.save(video);
     }
 
+    public Video getVideoById(Long id) {
+        return videoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Video with id: " + id + "not found"));
+    }
+
 }

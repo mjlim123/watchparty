@@ -19,7 +19,17 @@ public class Playlist {
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Video> videos;
 
+    private Integer position;
+
     public Playlist() {
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
     public List<Video> getVideos() {
@@ -58,12 +68,4 @@ public class Playlist {
         return Objects.hash(playlist_id, room, videos);
     }
 
-    @Override
-    public String toString() {
-        return "Playlist{" +
-                "playlist_id=" + playlist_id +
-                ", room=" + room +
-                ", videos=" + videos +
-                '}';
-    }
 }

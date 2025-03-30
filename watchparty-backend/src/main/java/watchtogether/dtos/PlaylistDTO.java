@@ -6,7 +6,16 @@ public class PlaylistDTO {
 
     private Long playlist_id;
     private Long room_id;
-    public List<VideoDTO> videos;
+    private List<VideoDTO> videos;
+    private Integer position;
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
 
     public List<VideoDTO> getVideos() {
         return videos;

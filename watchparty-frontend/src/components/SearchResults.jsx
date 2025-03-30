@@ -2,17 +2,37 @@ import React from 'react';
 import { useContext, useRef } from 'react';
 import { RoomContext } from '../contexts/RoomContext';
 import he from 'he';
-import { post } from '../apiService';
+import { post, put } from '../apiService';
 
 export default function SearchResults({resultsRef}) {
 
 
-    const { searchResults, currentVideo, setCurrentVideo, setPlaylist, playlist, room, connection } = useContext(RoomContext);
+    const { searchResults, 
+            currentVideo, setCurrentVideo,
+            setPlaylist, playlist,
+            playlistPosition, setPlaylistPosition,
+            room, connection,
+            setIsUsingPlaylist } = useContext(RoomContext);
 
-    const handleVideoSelect = (videoId) => {
+    const handleVideoSelect = async (video) => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-        
-        connection.send(`/app/room/${room.room_code}/change`, {}, JSON.stringify({ videoUrl: videoId }));
+        setIsUsingPlaylist(false);
+        put('room', `/${room.room_id}/usingPlaylist?isUsingPlaylist=false`)
+        const videoObject = {
+            "title" : video.snippet.title,
+            "video_url" : video.id.videoId,
+            "thumbnail_url" : video.snippet.thumbnails.high.url,
+            "playlistId" : null,
+        }
+        const response = await post('video', videoObject)
+        .then(data => {
+            return put('room', `/${room.room_id}/video?videoId=${data.video_id}`);
+        })
+        .then(data => {
+            setCurrentVideo(data);
+            connection.send(`/app/room/${room.room_code}/change`, {}, JSON.stringify(data));
+        });
+       
     }
 
     const handleAddToPlaylist = async (video, e) => {
@@ -36,7 +56,7 @@ export default function SearchResults({resultsRef}) {
             {searchResults.length > 0 ? (
                 <div className='w-[40vw] bg-[#1E293B] rounded-lg'>
                     {searchResults.map((result) => (
-                        <div onClick={() => handleVideoSelect(result.id.videoId)} key={result.id.videoId} 
+                        <div onClick={() => handleVideoSelect(result)} key={result.id.videoId} 
                         className="transition duration-300 hover:bg-[#1E293B] 
                         hover:shadow-[0_0_15px_#2563EB] flex items-center gap-6 p-6 border-b border-[#374151] 
                         last:border-b-0 cursor-pointer">

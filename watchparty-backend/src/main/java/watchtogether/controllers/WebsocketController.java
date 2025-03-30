@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import watchtogether.dtos.VideoAddRequest;
 import watchtogether.dtos.VideoDeleteRequest;
 
+import java.security.Principal;
+
 @Controller
 public class WebsocketController {
 
@@ -32,6 +34,15 @@ public class WebsocketController {
         return video;
     }
 
+    @MessageMapping("/room/{roomCode}/sync")
+    public void sync(@DestinationVariable String roomCode, Principal principal) {
+        String sessionId = principal.getName(); // Get the username or session ID of the connected user
+        String message = "Welcome! Your sync data is ready.";
+
+        messagingTemplate.convertAndSendToUser(sessionId, "/queue/sync", message);
+
+    }
+
     @MessageMapping("/room/{roomCode}/add")
     @SendTo("/topic/room/{roomCode}/add")
     public VideoAddRequest addVideo(@DestinationVariable String roomCode, @Payload VideoAddRequest video) {
@@ -42,7 +53,6 @@ public class WebsocketController {
     @MessageMapping("/room/{roomCode}/change")
     @SendTo("/topic/room/{roomCode}/change")
     public String changeVideo(String video) {
-
         return video;
     }
 

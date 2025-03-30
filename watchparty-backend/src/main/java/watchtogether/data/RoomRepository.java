@@ -7,7 +7,6 @@ import watchtogether.models.Room;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-
     @Query("SELECT r FROM Room r WHERE r.room_code = :roomCode")
     Room getRoomByCode(@Param("roomCode") String roomCode);
 }

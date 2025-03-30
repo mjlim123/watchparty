@@ -1,17 +1,28 @@
 import { useContext, useEffect } from "react";
 import { RoomContext } from "../contexts/RoomContext";
 import he from 'he';
-import { get, remove } from "../apiService";
+import { get, remove, put } from "../apiService";
+
 
 
 export default function Playlist() {
 
-    const { playlist, setCurrentVideo, setPlaylist, room, connection } = useContext(RoomContext);
+    const { playlist, setPlaylist,
+            setCurrentVideo, room,
+            connection,
+            setIsUsingPlaylist } = useContext(RoomContext);
 
 
-    const handleVideoSelect = (video) => {
+    const handleVideoSelect = async (video) => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-        connection.send(`/app/room/${room.room_code}/change`, {}, JSON.stringify({ videoUrl: video.video_url }));
+        setIsUsingPlaylist(true);
+        put('room', `/${room.room_id}/usingPlaylist?isUsingPlaylist=true`)
+        put('room', `/${room.room_id}/video?videoId=${video.video_id}`)
+            .then(data => {setCurrentVideo(data)});
+        // await put('room', `/${room.playlistId}/video?videoURL=${video.video_url}`);
+        const index = playlist.videos.findIndex((v) => v.video_id === video.video_id);
+        await put('playlist', `/${room.playlistId}/position/?number=${index}`);
+        connection.send(`/app/room/${room.room_code}/change`, {}, JSON.stringify( video ));
     }
 
     const removeFromPlaylist = (videoToRemove) => {
@@ -23,10 +34,10 @@ export default function Playlist() {
 
 
     return (
-        <div className={playlist.length > 0 ? '' : ''}>
-            {playlist.length > 0 ? (
+        <div className={playlist !== null ? '' : ''}>
+            {playlist !== null ? (
                 <div className='h-[80vh] bg-[#161B22]'>
-                    {playlist.map((result) => (
+                    {playlist.videos.map((result) => (
                         <div
                             onClick={() => handleVideoSelect(result)}
                             key={result.video_id}
@@ -55,6 +66,7 @@ export default function Playlist() {
                     <p>Playlist is empty.</p>
                 </div>
             )}
+            <button onClick={()=> console.log(playlist)}> CLICK HERE </button>
 
         </div>
     )

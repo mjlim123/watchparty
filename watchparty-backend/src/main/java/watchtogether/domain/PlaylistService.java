@@ -31,6 +31,13 @@ public class PlaylistService {
         return playlistRepository.findByRoomId(id);
     }
 
+    public Playlist updatePlaylistPosition(Long id, Integer number) {
+        Playlist playlist = playlistRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
+        playlist.setPosition(number);
+        return playlistRepository.save(playlist);
+    }
+
     public Playlist createPlaylist(Playlist playlist) {
         return playlistRepository.save(playlist);
     }
