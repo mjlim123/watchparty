@@ -13,6 +13,7 @@ public class VideoMapper {
         dto.setVideo_url(video.getVideo_url());
         dto.setVideo_id(video.getVideo_id());
         dto.setThumbnail_url(video.getThumbnail_url());
+        dto.setPlaylistId(video.getPlaylist().getPlaylist_id());
         return dto;
     }
 

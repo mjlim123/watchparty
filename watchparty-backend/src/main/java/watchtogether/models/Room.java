@@ -35,7 +35,18 @@ public class Room {
 
     private Boolean using_playlist;
 
+    private Boolean toggle_shuffle;
+
+
     public Room() {
+    }
+
+    public Boolean getToggle_shuffle() {
+        return toggle_shuffle;
+    }
+
+    public void setToggle_shuffle(Boolean toggle_shuffle) {
+        this.toggle_shuffle = toggle_shuffle;
     }
 
     public Boolean getUsing_playlist() {

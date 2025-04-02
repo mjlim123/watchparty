@@ -2,7 +2,6 @@ const URL = import.meta.env.VITE_API_URL;
 
 export async function get(endpoint, param = "") {
     const url = param ? `${URL}/api/${endpoint}/${param}` : `${URL}/${endpoint}`;
-    console.log(url);
 
     try {
         const response = await fetch(url, {
@@ -50,7 +49,7 @@ export async function post(endpoint, data, param = "") {
 
 export async function remove(endpoint, param = "") {
     const url = param ? `${URL}/api/${endpoint}/delete/${param}` : `${URL}/api/${endpoint}`;
-    console.log(url);
+
 
     try {
         const response = await fetch(url, {
@@ -75,7 +74,7 @@ export async function remove(endpoint, param = "") {
 
 export async function put(endpoint, param = "") {
     const url = param ? `${URL}/api/${endpoint}/update${param}` : `${URL}/api/${endpoint}`;
-    console.log(url);
+
     try {
         const response = await fetch(url, {
             method: "PUT", // Specify DELETE method

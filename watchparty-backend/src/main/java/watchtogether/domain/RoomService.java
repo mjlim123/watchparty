@@ -17,13 +17,11 @@ import java.util.List;
 public class RoomService {
 
     private final RoomRepository roomRepository;
-    private final PlaylistRepository playlistRepository;
     private final VideoRepository videoRepository;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository, PlaylistRepository playlistRepository, VideoRepository videoRepository) {
+    public RoomService(RoomRepository roomRepository, VideoRepository videoRepository) {
         this.roomRepository = roomRepository;
-        this.playlistRepository = playlistRepository;
         this.videoRepository = videoRepository;
     }
 
@@ -70,6 +68,14 @@ public class RoomService {
         room.setUsing_playlist(isUsingPlaylist);
         return roomRepository.save(room);
 
+    }
+
+    @Transactional
+    public Room updateShuffle(Long roomId, Boolean state) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+        room.setToggle_shuffle(state);
+        return roomRepository.save(room);
     }
 
     public Room getRoomByCode(String roomCode) {

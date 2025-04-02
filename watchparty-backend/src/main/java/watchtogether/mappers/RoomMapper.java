@@ -26,6 +26,7 @@ public class RoomMapper {
         }
         dto.setCurrent_video_time(room.getCurrent_video_time());
         dto.setUsing_playlist(room.getUsing_playlist());
+        dto.setToggle_shuffle(room.getToggle_shuffle());
         return dto;
     }
 

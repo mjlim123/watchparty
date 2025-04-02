@@ -21,7 +21,8 @@ export default function Room() {
         currentTime, setCurrentTime,
         targetRef,
         playlistPosition, setPlaylistPosition,
-        isUsingPlaylist, setIsUsingPlaylist } = useContext(RoomContext);
+        isUsingPlaylist, setIsUsingPlaylist,
+        setIsShuffle, isShuffle } = useContext(RoomContext);
 
     const [input, setInput] = useState('');
 
@@ -33,8 +34,6 @@ export default function Room() {
     const [user, setUser] = useState('');
 
     const opts = {
-        height: window.innerHeight * 0.8,
-        width: window.innerWidth * 0.81,
         playerVars: {
             // https://developers.google.com/youtube/player_parameters
             autoplay: 1,
@@ -51,6 +50,7 @@ export default function Room() {
 
     function handleAddToPlaylist(video) {
         console.log("GETTING PLAYLIST");
+
         get('playlist', `${video.playlistId}`).then((data) => setPlaylist(data));
     }
 
@@ -59,7 +59,7 @@ export default function Room() {
         setPlaylist((prev) => ({
             ...prev,
             videos: prev.videos.filter((video) => video.video_id !== videoId),
-          }));
+        }));
     }
 
     function handlePlayVideo(video) {
@@ -67,18 +67,22 @@ export default function Room() {
         setCurrentVideo(video);
     }
 
+    function handleShuffle(action) {
+        console.log(action);
+        put('room', `/${room.room_id}/toggleShuffle?state=${action}`)
+        .then((data) => setIsShuffle(data.toggle_shuffle));
+    }
+
     useEffect(() => {
         document.getElementById('my_modal').showModal();
-        console.log(playlist);
     }, [])
 
     useEffect(() => {
         if (room) {
-            console.log(room)
-            console.log("GETTING PLAYLIST");
             setCurrentTime(room.current_video_time);
             setCurrentVideo(room.current_video ? room.current_video : null);
             setIsUsingPlaylist(room.using_playlist);
+            setIsShuffle(room.toggle_shuffle);
 
             const socket = new SockJS(`${URL}/ws`);
             const connection = over(socket);
@@ -86,42 +90,40 @@ export default function Room() {
             setConnection(connection);
             connection.connect({}, () => {
                 connection.subscribe(`/topic/room/${code}/delete`, (response) => {
-                    console.log("DELETE VIDEO!");
                     const videoId = JSON.parse(response.body).videoId;
                     const playlistId = JSON.parse(response.body).playlistId;
                     handleDelete(videoId, playlistId);
                 });
 
                 connection.subscribe(`/topic/room/${code}/add`, (response) => {
-                    console.log("ADD VIDEO!");
                     const video = JSON.parse(response.body);
                     handleAddToPlaylist(video);
                 });
 
                 connection.subscribe(`/topic/room/${code}/change`, (response) => {
-                    console.log("CHANGE VIDEO!");
                     const video = JSON.parse(response.body);
                     handlePlayVideo(video);
                 });
 
                 connection.subscribe(`/topic/room/${code}/pause`, (response) => {
-                    console.log("pause")
                     const action = JSON.parse(response.body);
                     playerRef.current.pauseVideo();
                 });
 
                 connection.subscribe(`/topic/room/${code}/play`, (response) => {
-                    console.log("play")
                     const action = JSON.parse(response.body);
                     playerRef.current.playVideo();
                 });
 
                 connection.subscribe(`/topic/room/${code}/seek`, (response) => {
                     const action = JSON.parse(response.body);
-                    console.log("seek to: ", action.time);
                     playerRef.current.seekTo(action.time);
                 });
 
+                connection.subscribe(`/topic/room/${code}/toggleShuffle`, (response) => {
+                    const action = JSON.parse(response.body).isShuffle;
+                    handleShuffle(action);
+                });
             });
         }
 
@@ -161,89 +163,107 @@ export default function Room() {
                 {/* <button onClick={()=> console.log(currentVideo)}>CURRENT VIDEO!!!</button> */}
                 {/* Video Player (Larger) */}
                 <div className="col-span-3 h-[80vh] w-[81vw] rounded-lg">
-                    {currentVideo === null ?
+                    {currentVideo === null ? (
                         <div className="flex flex-row min-h-[70vh] justify-center items-center">
                             <h1 className="text-6xl">Search a video to get started!</h1>
-                        </div> :
-                        <YouTube
-                            opts={opts}
-                            videoId={currentVideo.video_url}
-                            onReady={(e) => {
-                                playerRef.current = e.target;
-                                e.target.seekTo(currentTime);
-                            }}
-                            onPause={(e) => {
-                                if (connection) {
-                                    connection.send(
-                                        `/app/room/${room.room_code}/pause`,
-                                        {},
-                                        JSON.stringify({ action: "pause" })
-                                    );
-                                }
-                            }}
-                            onPlay={(e) => {
-                                connection.send(
-                                    `/app/room/${room.room_code}/play`,
-                                    {},
-                                    JSON.stringify({ action: "play" })
-                                );
-                            }}
-                            onStateChange={(e) => {
-                                let newTime = playerRef.current.getCurrentTime();
-                                const timeDifference = Math.abs(newTime - lastSeekTimeRef.current);
-
-                                if (e.data === 1) { // Playing
-                                    console.log("PLAYING!!");
-
-                                    // Start interval if not already running
-                                    if (!playIntervalRef.current) {
-                                        playIntervalRef.current = setInterval(() => {
-                                            newTime = playerRef.current.getCurrentTime();
-                                            const request = put('room', `/${room.playlistId}/time?videoTime=${newTime}`);
-                                        }, 1000); // Log every second
-                                    }
-                                } else {
-                                    // Clear the interval when video is paused or stopped
-                                    if (playIntervalRef.current) {
-                                        clearInterval(playIntervalRef.current);
-                                        playIntervalRef.current = null;
-                                    }
-                                }
-                                if (e.data === 1 || e.data === 3) { // Playing or Buffering
-                                    if (timeDifference > 1) { // Only send if user actually seeks
-                                        lastSeekTimeRef.current = newTime; // Update last seek time
+                        </div>
+                    ) : (
+                        <div className="w-full h-full flex justify-center items-center bg-[#161B22]">
+                            <div className="w-full h-full">
+                                <YouTube
+                                    className="w-full h-full"
+                                    opts={{
+                                        width: "100%",
+                                        height: "100%",
+                                        playerVars: {
+                                            autoplay: 1,
+                                        },
+                                    }}
+                                    videoId={currentVideo.video_url}
+                                    onReady={(e) => {
+                                        console.log("READY!!");
+                                        playerRef.current = e.target;
+                                        e.target.seekTo(currentTime);
+                                    }}
+                                    onPause={(e) => {
                                         if (connection) {
                                             connection.send(
-                                                `/app/room/${room.room_code}/seek`,
+                                                `/app/room/${room.room_code}/pause`,
                                                 {},
-                                                JSON.stringify({ time: newTime })
+                                                JSON.stringify({ action: "pause" })
                                             );
                                         }
+                                    }}
+                                    onPlay={(e) => {
+                                        connection.send(
+                                            `/app/room/${room.room_code}/play`,
+                                            {},
+                                            JSON.stringify({ action: "play" })
+                                        );
+                                    }}
+                                    onStateChange={(e) => {
+                                        let newTime = playerRef.current.getCurrentTime();
+                                        const timeDifference = Math.abs(newTime - lastSeekTimeRef.current);
 
-                                    }
-                                }
-                            }}
-                            onEnd={(e) => {
-                                const request = put('room', `/${room.playlistId}/time?videoTime=0`).then((data) => { setCurrentTime(0); });
-                                if (isUsingPlaylist) {
-                                    let index = (playlist.videos.findIndex((video) => video.video_id === currentVideo.video_id));
-                                    if (index + 1 < playlist.videos.length) {
-                                        setTimeout(() => {
-                                            connection.send(`/app/room/${room.room_code}/change`, {}, JSON.stringify(playlist.videos[index + 1]));
-                                            put('room', `/${room.room_id}/video?videoId=${playlist.videos[index + 1].video_id}`)
-                                        }, 1000);
-                                    } else {
-                                        setTimeout(() => {
-                                            connection.send(`/app/room/${room.room_code}/change`, {}, JSON.stringify(playlist.videos[0]));
-                                            put('room', `/${room.room_id}/video?videoId=${playlist.videos[index + 1].video_id}`)
-                                        }, 1000);
-                                    }
+                                        if (e.data === 1) { // Playing
+                                            console.log("PLAYING!!");
 
-                                }
+                                            // Start interval if not already running
+                                            if (!playIntervalRef.current) {
+                                                playIntervalRef.current = setInterval(() => {
+                                                    newTime = playerRef.current.getCurrentTime();
+                                                    put('room', `/${room.playlistId}/time?videoTime=${newTime}`);
+                                                }, 1000);
+                                            }
+                                        } else {
+                                            // Clear interval when video is paused/stopped
+                                            if (playIntervalRef.current) {
+                                                clearInterval(playIntervalRef.current);
+                                                playIntervalRef.current = null;
+                                            }
+                                        }
+                                        if (e.data === 1 || e.data === 3) { // Playing or Buffering
+                                            if (timeDifference > 1) {
+                                                lastSeekTimeRef.current = newTime;
+                                                if (connection) {
+                                                    connection.send(
+                                                        `/app/room/${room.room_code}/seek`,
+                                                        {},
+                                                        JSON.stringify({ time: newTime })
+                                                    );
+                                                }
+                                            }
+                                        }
+                                    }}
+                                    onEnd={(e) => {
+                                        put('room', `/${room.playlistId}/time?videoTime=0`).then(() => setCurrentTime(0));
+                                        if (isUsingPlaylist && playlist.videos.length > 0) {
+                                            let nextVideo;
 
-                            }}
-                        />
-                    }
+                                            if (isShuffle) {
+                                                const remainingVideos = playlist.videos.filter(v => v.video_id !== currentVideo.video_id);
+                                                nextVideo = remainingVideos[Math.floor(Math.random() * remainingVideos.length)];
+                                            } else {
+                                                const index = playlist.videos.findIndex(video => video.video_id === currentVideo.video_id);
+                                                if (index + 1 < playlist.videos.length) {
+                                                    nextVideo = playlist.videos[index + 1];
+                                                } else {
+                                                    nextVideo = playlist.videos[0];
+                                                }
+                                            }
+
+                                            if (nextVideo) {
+                                                setTimeout(() => {
+                                                    connection.send(`/app/room/${room.room_code}/change`, {}, JSON.stringify(nextVideo));
+                                                    put('room', `/${room.room_id}/video?videoId=${nextVideo.video_id}`);
+                                                }, 1000);
+                                            }
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="sticky top-24 col-start-4 justify-self-end w-[18vw] max-h-[80vh] rounded-lg overflow-y-auto">

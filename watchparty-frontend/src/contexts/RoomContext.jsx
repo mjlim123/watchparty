@@ -13,6 +13,7 @@ export const RoomProvider = ({ children }) => {
     const [playlistPosition, setPlaylistPosition] = useState(0);
     const targetRef = useRef(null);
     const [isUsingPlaylist, setIsUsingPlaylist] = useState(false);
+    const [isShuffle, setIsShuffle] = useState(false);
 
     return (
         <RoomContext.Provider
@@ -35,6 +36,9 @@ export const RoomProvider = ({ children }) => {
                 setPlaylistPosition,
                 isUsingPlaylist,
                 setIsUsingPlaylist,
+                isShuffle,
+                setIsShuffle,
+                
             }}
         >
             {children}

@@ -13,6 +13,7 @@ export default function SearchResults({resultsRef}) {
             playlistPosition, setPlaylistPosition,
             room, connection,
             setIsUsingPlaylist } = useContext(RoomContext);
+            
 
     const handleVideoSelect = async (video) => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -37,7 +38,6 @@ export default function SearchResults({resultsRef}) {
 
     const handleAddToPlaylist = async (video, e) => {
         e.stopPropagation();
-        console.log(video.snippet.thumbnails.high.url);
         const videoObject = {
             "title" : video.snippet.title,
             "video_url" : video.id.videoId,
@@ -45,8 +45,7 @@ export default function SearchResults({resultsRef}) {
             "playlistId" : room.playlistId
         }
         const response = await post('video', videoObject, `/${room.playlistId}`);
-        console.log(response);
-        connection.send(`/app/room/${room.room_code}/add`, {} , JSON.stringify(videoObject));
+        connection.send(`/app/room/${room.room_code}/add`, {} , JSON.stringify({"playlistId" : room.playlistId}));
         // console.log(response);
         // setPlaylist((prev) => [...prev, response]);
     }

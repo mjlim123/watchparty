@@ -35,6 +35,6 @@ create table video (
 );
 
 ALTER TABLE room ADD CONSTRAINT fk_room_current_video 
-FOREIGN KEY (current_video_id) REFERENCES video(video_id);
+FOREIGN KEY (current_video_id) REFERENCES video(video_id) on delete cascade;
 
-select * from video;
+select * from room;

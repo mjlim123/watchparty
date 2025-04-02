@@ -10,8 +10,17 @@ public class RoomDTO {
     private VideoDTO current_video;
     private Double current_video_time;
     private Boolean using_playlist;
+    private Boolean toggle_shuffle;
 
     public RoomDTO() {
+    }
+
+    public Boolean getToggle_shuffle() {
+        return toggle_shuffle;
+    }
+
+    public void setToggle_shuffle(Boolean toggle_shuffle) {
+        this.toggle_shuffle = toggle_shuffle;
     }
 
     public Boolean getUsing_playlist() {

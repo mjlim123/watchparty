@@ -44,6 +44,14 @@ public class VideoService {
         return videoRepository.save(video);
     }
 
+    public List<Video> createVideos(List<Video> videos, Long playlistId) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+
+        videos.forEach(video -> video.setPlaylist(playlist));
+        return videoRepository.saveAll(videos);
+    }
+
     public Video getVideoById(Long id) {
         return videoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Video with id: " + id + "not found"));

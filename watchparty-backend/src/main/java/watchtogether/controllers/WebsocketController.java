@@ -46,7 +46,7 @@ public class WebsocketController {
     @MessageMapping("/room/{roomCode}/add")
     @SendTo("/topic/room/{roomCode}/add")
     public VideoAddRequest addVideo(@DestinationVariable String roomCode, @Payload VideoAddRequest video) {
-
+        System.out.println("ADDING!");
         return video;
     }
 
@@ -66,14 +66,19 @@ public class WebsocketController {
     @MessageMapping("/room/{roomCode}/play")
     @SendTo("/topic/room/{roomCode}/play")
     public String playVideo(String video) {
-
         return video;
     }
 
     @MessageMapping("/room/{roomCode}/seek")
     @SendTo("/topic/room/{roomCode}/seek")
     public String seekVideo(String video) {
+        return video;
+    }
 
+    @MessageMapping("/room/{roomCode}/toggleShuffle")
+    @SendTo("/topic/room/{roomCode}/toggleShuffle")
+    public String toggleShuffle(String video) {
+        System.out.println("SHUFFLE");
         return video;
     }
 }

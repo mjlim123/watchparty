@@ -10,6 +10,7 @@ import watchtogether.mappers.VideoMapper;
 import watchtogether.models.Video;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -60,5 +61,12 @@ public class VideoController {
         Video videoToCreate = videoService.createVideo(video);
         VideoDTO dto = videoMapper.toDTO(videoToCreate);
         return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/create/batch/{playlistId}")
+    public ResponseEntity<List<VideoDTO>> createVideos(@RequestBody List<Video> videos, @PathVariable Long playlistId) {
+        List<Video> createdVideos = videoService.createVideos(videos, playlistId);
+        List<VideoDTO> dtos = createdVideos.stream().map(videoMapper::toDTO).toList();
+        return ResponseEntity.ok(dtos);
     }
 }

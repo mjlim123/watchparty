@@ -12,7 +12,17 @@ public class VideoDTO {
 
     private String thumbnail_url;
 
+    private Long playlistId;
+
     public VideoDTO() {
+    }
+
+    public Long getPlaylistId() {
+        return playlistId;
+    }
+
+    public void setPlaylistId(Long playlistId) {
+        this.playlistId = playlistId;
     }
 
     public String getThumbnail_url() {

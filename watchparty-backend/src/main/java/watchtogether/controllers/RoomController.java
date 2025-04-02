@@ -81,4 +81,14 @@ public class RoomController {
 
     }
 
+    @PutMapping("/update/{id}/toggleShuffle")
+    public ResponseEntity<RoomDTO> toggleShuffle(@PathVariable Long id, @RequestParam Boolean state) {
+        Room roomToUpdate = roomService.updateShuffle(id, state);
+        RoomDTO dto = roomMapper.toDTO(roomToUpdate);
+        return ResponseEntity.ok(dto);
+
+    }
+
+
+
 }
